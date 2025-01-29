@@ -1,5 +1,5 @@
 from core.stats import stats
-from ui.logs import log_event
+from ui.logs import logEvent
 
 quests = [
     {"name": "Complete 10 key presses", "condition": lambda: stats["key_press_count"], "target": 10, "completed": False},
@@ -13,13 +13,13 @@ achievements = [
     {"name": "Traveler (5000 pixels moved)", "condition": lambda: stats["mouse_distance"], "target": 5000, "completed": False},
 ]
 
-def update_quests_and_achievements():
+def updateQuestsAndAchievements():
     for quest in quests:
         if not quest["completed"] and quest["condition"]() >= quest["target"]:
             quest["completed"] = True
-            log_event(f"Quest Completed: {quest['name']}")
+            logEvent(f"Quest Completed: {quest['name']}")
     
     for achievement in achievements:
         if not achievement["completed"] and achievement["condition"]() >= achievement["target"]:
             achievement["completed"] = True
-            log_event(f"Achievement Unlocked: {achievement['name']}")
+            logEvent(f"Achievement Unlocked: {achievement['name']}")

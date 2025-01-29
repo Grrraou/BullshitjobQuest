@@ -2,11 +2,11 @@ import tkinter as tk
 from tkinter import ttk, StringVar
 
 from core.stats import stats, saveStats
-from core.hero import level_up
-from core.quests import update_quests_and_achievements
+from core.hero import levelUp
+from core.quests import updateQuestsAndAchievements
 from core.quests import quests,achievements
 
-from ui.logs import setup_log
+from ui.logs import setupLog
 from ui.config import importSave,exportSave,resetSave
 
 mainGui = None
@@ -39,7 +39,7 @@ def initTabs():
     # Adventure Tab
     adventure_tab = ttk.Frame(notebook)
     notebook.add(adventure_tab, text="Adventure")
-    setup_log(adventure_tab)
+    setupLog(adventure_tab)
 
     # Quest Tab
     quest_tab = ttk.Frame(notebook)
@@ -98,9 +98,9 @@ def initTabs():
 
 # Update GUI
 def updateTabs():
-    stats["hero_xp"] += stats["key_press_count"] + stats["mouse_click_count"] + int(stats["mouse_distance"] // 100)
-    level_up()
-    update_quests_and_achievements()
+    #stats["hero_xp"] += stats["key_press_count"] + stats["mouse_click_count"] + int(stats["mouse_distance"] // 100)
+    levelUp()
+    updateQuestsAndAchievements()
 
     # Hero Tab
     key_var.set(f"Keys Pressed: {stats['key_press_count']}")

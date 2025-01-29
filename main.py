@@ -1,7 +1,7 @@
 import threading
 
 from core.stats import loadStats
-from core.event_handlers import start_listeners
+from core.inputs import startListeners
 
 from ui.gui import initGUI,updateTabs
 
@@ -12,7 +12,7 @@ loadStats()
 mainGui = initGUI()
 
 # Start listeners and GUI loop
-listener_thread = threading.Thread(target=start_listeners, daemon=True)
+listener_thread = threading.Thread(target=startListeners, daemon=True)
 listener_thread.start()
 
 mainGui.after(100, updateTabs)
