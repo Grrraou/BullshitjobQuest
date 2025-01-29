@@ -34,7 +34,7 @@ def initGUI():
     return mainGui
 
 def initTabs():
-    global key_var,click_var,distance_var,level_var,xp_var, quest_progress, achievement_progress, always_on_top_var
+    global key_var,click_var,distance_var,level_var,xp_var, quest_progress, achievement_progress, always_on_top_var, hero_level_progress
 
     # Adventure Tab
     adventure_tab = ttk.Frame(notebook)
@@ -74,6 +74,8 @@ def initTabs():
     tk.Label(hero_tab, textvariable=distance_var, font=("Helvetica", 14)).pack(pady=5)
     tk.Label(hero_tab, textvariable=level_var, font=("Helvetica", 14)).pack(pady=5)
     tk.Label(hero_tab, textvariable=xp_var, font=("Helvetica", 14)).pack(pady=5)
+    hero_level_progress = tk.DoubleVar()
+    ttk.Progressbar(hero_tab, variable=hero_level_progress, maximum=100).pack(fill="x", padx=10, pady=5)
 
     # Inventory Tab
     inventory_tab = ttk.Frame(notebook)
@@ -108,6 +110,7 @@ def updateTabs():
     distance_var.set(f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
     level_var.set(f"Level: {stats['hero_level']}")
     xp_var.set(f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
+    hero_level_progress.set(stats['hero_xp'] / stats['xp_threshold'] * 100)
 
      # Quest Tab
     for i, quest in enumerate(quests):
