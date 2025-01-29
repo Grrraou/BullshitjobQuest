@@ -22,6 +22,7 @@ xp_var = None
 def initGUI(): 
     global mainGui,notebook
     mainGui = tk.Tk()
+    mainGui.iconbitmap("icon.ico")
     mainGui.title("Bullshitjob Quest")
 
     # Tabs
