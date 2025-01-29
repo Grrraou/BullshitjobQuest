@@ -1,3 +1,4 @@
+import tkinter as tk
 from tkinter import filedialog, messagebox
 from core.stats import loadStats, saveStats, resetStats
 
@@ -14,5 +15,10 @@ def exportSave():
         messagebox.showinfo("Export Successful", "Save file exported successfully!")
 
 def resetSave():
-    exportSave()
-    resetStats()
+    root = tk.Tk()
+    root.withdraw()
+    if (messagebox.askyesno("Reset datas", "Are you sure ?")):
+        if (messagebox.askyesno("Backup", "Want a backup first ?")):
+            exportSave()
+        resetStats()
+    
