@@ -3,8 +3,8 @@ from tkinter import ttk, StringVar
 
 from core.stats import stats, saveStats
 from core.hero import levelUp
-from core.quests import updateQuestsAndAchievements
-from core.quests import quests,achievements
+from core.quests import updateQuests,quests
+from core.achievements import updateAchievements,achievements
 
 from ui.logs import setupLog
 from ui.config import importSave,exportSave,resetSave
@@ -103,7 +103,8 @@ def initTabs():
 def updateTabs():
     #stats["hero_xp"] += stats["key_press_count"] + stats["mouse_click_count"] + int(stats["mouse_distance"] // 100)
     levelUp()
-    updateQuestsAndAchievements()
+    updateQuests()
+    updateAchievements()
 
     # Hero Tab
     key_var.set(f"Keys Pressed: {stats['key_press_count']}")
