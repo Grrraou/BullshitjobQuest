@@ -1,16 +1,19 @@
 # Makefile for setting up a virtual environment, installing dependencies, and building the binary
 
-# Set the Python script filename (replace this with your script name)
+# Set the Python script filename
 SCRIPT_NAME = main.py
 
-# The name of the output binary (adjust as needed)
-OUTPUT_NAME = BullshitJobQuest
+# The name of the output binary 
+OUTPUT_NAME = BullshitjobQuest
 
-# The name of the generated folder (default is dist)
+# The name of the generated folder 
 DIST_DIR = dist
 
-# The virtual environment folder (default is venv)
+# The virtual environment folder 
 VENV_DIR = venv
+
+# The App icon
+ICON_PATH = icon.ico
 
 # Default target: Build the binary
 all: venv build
@@ -25,7 +28,7 @@ venv:
 # Create the binary using PyInstaller
 build:
 	@echo "Building the binary..."
-	$(VENV_DIR)\Scripts\python -m PyInstaller --onefile --windowed $(SCRIPT_NAME) --name $(OUTPUT_NAME)
+	$(VENV_DIR)\Scripts\python -m PyInstaller --onefile --windowed $(SCRIPT_NAME) --name $(OUTPUT_NAME) --icon=$(ICON_PATH)
 
 # Clean the generated files (dist, build, .spec file, venv)
 clean:

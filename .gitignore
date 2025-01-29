@@ -2,3 +2,5 @@ build/*
 dist/*
 venv/*
 *.spec
+
+*/__pycache__
