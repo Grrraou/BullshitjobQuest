@@ -1,9 +1,9 @@
 {
-    "key_press_count": 25,
-    "mouse_click_count": 66,
-    "mouse_distance": 40122.73707280763,
-    "hero_level": 20,
-    "hero_xp": 69507,
-    "xp_threshold": 220753,
+    "key_press_count": 0,
+    "mouse_click_count": 1,
+    "mouse_distance": 9971.903157373772,
+    "hero_level": 8,
+    "hero_xp": 1207,
+    "xp_threshold": 1702,
     "inventory": []
 }

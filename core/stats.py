@@ -1,11 +1,13 @@
 import json
 import os
+import sys
+
 
 # File to store statistics
 log_file = "data/stats.json"
 
 # Stats
-stats = {
+defaultStats = {
     "key_press_count": 0,
     "mouse_click_count": 0,
     "mouse_distance": 0.0,
@@ -14,15 +16,26 @@ stats = {
     "xp_threshold": 100,
     "inventory": [],
 }
+stats = defaultStats.copy()
 
 # Load stats from file
-def load_stats(filepath=log_file):
+def loadStats(filepath=log_file):
     global stats
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
             stats.update(json.load(f))
 
 # Save stats to file
-def save_stats(filepath=log_file):
+def saveStats(filepath=log_file):
     with open(filepath, "w") as f:
         json.dump(stats, f, indent=4)
+
+def resetStats():
+    global stats, defaultStats
+    stats = defaultStats.copy()     # Reset stats
+    saveStats()  
+    restartApp()
+
+def restartApp():
+    print("Restarting the application...")
+    os.execv(sys.executable, ['python'] + sys.argv)

@@ -1,13 +1,13 @@
 import tkinter as tk
 from tkinter import ttk, StringVar
 
-from core.stats import stats, save_stats
+from core.stats import stats, saveStats
 from core.hero import level_up
 from core.quests import update_quests_and_achievements
 from core.quests import quests,achievements
 
 from ui.logs import setup_log
-from ui.config import import_save,export_save
+from ui.config import importSave,exportSave,resetSave
 
 mainGui = None
 notebook = None
@@ -23,6 +23,7 @@ def initGUI():
     global mainGui,notebook
     mainGui = tk.Tk()
     mainGui.title("Bullshitjob Quest")
+
     # Tabs
     notebook = ttk.Notebook(mainGui)
     notebook.pack(padx=10, pady=10, expand=True)
@@ -85,8 +86,9 @@ def initTabs():
     config_tab = ttk.Frame(notebook)
     notebook.add(config_tab, text="Config")
 
-    tk.Button(config_tab, text="Import Save", command=import_save).pack(pady=5)
-    tk.Button(config_tab, text="Export Save", command=export_save).pack(pady=5)
+    tk.Button(config_tab, text="Import Save", command=importSave).pack(pady=5)
+    tk.Button(config_tab, text="Export Save", command=exportSave).pack(pady=5)
+    tk.Button(config_tab, text="Reset datas", command=resetSave).pack(pady=5)
 
     # Boolean variable for Always on Top
     always_on_top_var = tk.BooleanVar(value=False)
@@ -115,8 +117,8 @@ def updateTabs():
     for i, achievement in enumerate(achievements):
         achievement_progress[i].set(achievement["condition"]() / achievement["target"] * 100)
 
-    save_stats()
-    mainGui.after(100, update_gui)
+    saveStats()
+    mainGui.after(100, updateTabs)
 
 def toggle_always_on_top():
     mainGui.wm_attributes("-topmost", always_on_top_var.get())

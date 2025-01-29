@@ -1,12 +1,12 @@
 import threading
 
-from core.stats import load_stats
+from core.stats import loadStats
 from core.event_handlers import start_listeners
 
 from ui.gui import initGUI,updateTabs
 
 # Load stats on startup
-load_stats()
+loadStats()
 
 # GUI Setup
 mainGui = initGUI()
