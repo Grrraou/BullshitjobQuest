@@ -13,7 +13,10 @@ mainGui = None
 notebook = None
 
 key_var = None
-click_var = None
+left_click_var = None
+right_click_var = None
+middle_click_var = None
+other_click_var = None
 distance_var = None
 level_var = None
 xp_var = None
@@ -35,7 +38,8 @@ def initGUI():
     return mainGui
 
 def initTabs():
-    global key_var,click_var,distance_var,level_var,xp_var, quest_progress, achievement_progress, always_on_top_var, hero_level_progress
+    global key_var,left_click_var,right_click_var,middle_click_var,other_click_var
+    global distance_var,level_var,xp_var, quest_progress, achievement_progress, always_on_top_var, hero_level_progress
 
     # Adventure Tab
     adventure_tab = ttk.Frame(notebook)
@@ -65,13 +69,19 @@ def initTabs():
     notebook.add(hero_tab, text="Hero")
 
     key_var = StringVar(value=f"Keys Pressed: {stats['key_press_count']}")
-    click_var = StringVar(value=f"Mouse Clicks: {stats['mouse_click_count']}")
+    left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
+    right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
+    middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
+    other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
     distance_var = StringVar(value=f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
     level_var = StringVar(value=f"Level: {stats['hero_level']}")
     xp_var = StringVar(value=f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
 
     tk.Label(hero_tab, textvariable=key_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=click_var, font=("Helvetica", 14)).pack(pady=5)
+    tk.Label(hero_tab, textvariable=left_click_var, font=("Helvetica", 14)).pack(pady=5)
+    tk.Label(hero_tab, textvariable=right_click_var, font=("Helvetica", 14)).pack(pady=5)
+    tk.Label(hero_tab, textvariable=middle_click_var, font=("Helvetica", 14)).pack(pady=5)
+    tk.Label(hero_tab, textvariable=other_click_var, font=("Helvetica", 14)).pack(pady=5)
     tk.Label(hero_tab, textvariable=distance_var, font=("Helvetica", 14)).pack(pady=5)
     tk.Label(hero_tab, textvariable=level_var, font=("Helvetica", 14)).pack(pady=5)
     tk.Label(hero_tab, textvariable=xp_var, font=("Helvetica", 14)).pack(pady=5)
@@ -101,14 +111,16 @@ def initTabs():
 
 # Update GUI
 def updateTabs():
-    #stats["hero_xp"] += stats["key_press_count"] + stats["mouse_click_count"] + int(stats["mouse_distance"] // 100)
     levelUp()
     updateQuests()
     updateAchievements()
 
     # Hero Tab
     key_var.set(f"Keys Pressed: {stats['key_press_count']}")
-    click_var.set(f"Mouse Clicks: {stats['mouse_click_count']}")
+    left_click_var.set(f"Left Clicks: {stats['Button.left']}")
+    right_click_var.set(f"Right Clicks: {stats['Button.right']}")
+    middle_click_var.set(f"Middle Clicks: {stats['Button.middle']}")
+    other_click_var.set(f"Other Clicks: {stats['Button.other']}")
     distance_var.set(f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
     level_var.set(f"Level: {stats['hero_level']}")
     xp_var.set(f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
