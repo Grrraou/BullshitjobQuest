@@ -9,7 +9,10 @@ log_file = "data/stats.json"
 # Stats
 defaultStats = {
     "key_press_count": 0,
-    "mouse_click_count": 0,
+    "Button.left": 0,
+    "Button.right": 0,
+    "Button.middle": 0,
+    "Button.other": 0,
     "mouse_distance": 0.0,
     "hero_level": 1,
     "hero_xp": 0,

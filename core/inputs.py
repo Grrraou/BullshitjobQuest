@@ -11,7 +11,16 @@ def on_key_press(key):
 
 def on_mouse_click(x, y, button, pressed):
     if pressed:
-        stats["mouse_click_count"] += 1
+        print(f"Button pressed: {button}")
+        if str(button) == "Button.left":
+            stats["Button.left"] += 1
+        elif str(button) == "Button.right":
+            stats["Button.right"] += 1
+        elif str(button) == "Button.middle":
+            stats["Button.middle"] += 1
+        else:
+            stats["Button.other"] += 1
+            return
         xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
         stats["hero_xp"] += xp_gain
 
