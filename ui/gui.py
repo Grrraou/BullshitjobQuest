@@ -33,6 +33,7 @@ def initGUI():
     mainGui.title("Bullshitjob Quest")
     mainGui.option_add("*Font", ("Fixedsys", 14))
 
+    initHeader()
     # Tabs
     notebook = ttk.Notebook(mainGui)
     notebook.pack(padx=10, pady=10, expand=True)
@@ -42,9 +43,8 @@ def initGUI():
 
     return mainGui
 
-def initTabs():
-    global key_var,left_click_var,right_click_var,middle_click_var,other_click_var
-    global distance_var,level_var,xp_var, quest_progress, achievement_progress, always_on_top_var, hero_level_progress
+def initHeader():
+    global level_var, xp_var, hero_level_progress
 
     # XP and level
     header_frame = tk.Frame(mainGui, bg="lightgray")
@@ -57,7 +57,11 @@ def initTabs():
     hero_level_progress = tk.DoubleVar()
     ttk.Progressbar(header_frame, variable=hero_level_progress, maximum=100).pack(fill="x", padx=10, pady=5)
 
-    # Adventure Tab
+def initTabs():
+    global key_var,left_click_var,right_click_var,middle_click_var,other_click_var
+    global distance_var, quest_progress, achievement_progress, always_on_top_var
+
+    # Logs Tab
     logs_tab = ttk.Frame(notebook)
     notebook.add(logs_tab, text="📜Logs")
     setupLog(logs_tab)
@@ -95,12 +99,12 @@ def initTabs():
     other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
     distance_var = StringVar(value=f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
 
-    tk.Label(stats_tab, textvariable=key_var, font=("Fixedsys", 14)).pack(pady=5)
-    tk.Label(stats_tab, textvariable=left_click_var, font=("Fixedsys", 14)).pack(pady=5)
-    tk.Label(stats_tab, textvariable=right_click_var, font=("Fixedsys", 14)).pack(pady=5)
-    tk.Label(stats_tab, textvariable=middle_click_var, font=("Fixedsys", 14)).pack(pady=5)
-    tk.Label(stats_tab, textvariable=other_click_var, font=("Fixedsys", 14)).pack(pady=5)
-    tk.Label(stats_tab, textvariable=distance_var, font=("Fixedsys", 14)).pack(pady=5)
+    tk.Label(stats_tab, textvariable=key_var).pack(pady=5)
+    tk.Label(stats_tab, textvariable=left_click_var).pack(pady=5)
+    tk.Label(stats_tab, textvariable=right_click_var).pack(pady=5)
+    tk.Label(stats_tab, textvariable=middle_click_var).pack(pady=5)
+    tk.Label(stats_tab, textvariable=other_click_var).pack(pady=5)
+    tk.Label(stats_tab, textvariable=distance_var).pack(pady=5)
 
     # Inventory Tab
     inventory_tab = ttk.Frame(notebook)
@@ -115,7 +119,7 @@ def initTabs():
 
     tk.Button(config_tab, text="⬇️Import", command=importSave).pack(pady=5)
     tk.Button(config_tab, text="⬆️Export", command=exportSave).pack(pady=5)
-    tk.Button(config_tab, text="🔄Reset datas", command=resetSave).pack(pady=5)
+    tk.Button(config_tab, text="Reset datas", command=resetSave).pack(pady=5)
 
     # Boolean variable for Always on Top
     always_on_top_var = tk.BooleanVar(value=False)
@@ -147,7 +151,7 @@ def updateTabs():
     for i, quest in enumerate(quests):
         quest_progress[i].set(quest["condition"]() / quest["target"] * 100)
 
-    # Achievements Tab
+    # Logs Tab
     for i, achievement in enumerate(achievements):
         achievement_progress[i].set(achievement["condition"]() / achievement["target"] * 100)
 
