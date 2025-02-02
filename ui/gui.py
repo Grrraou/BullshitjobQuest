@@ -27,6 +27,7 @@ def initGUI():
     mainGui = tk.Tk()
     mainGui.iconbitmap("icon.ico")
     mainGui.title("Bullshitjob Quest")
+    mainGui.option_add("*Font", ("Fixedsys", 14))
 
     # Tabs
     notebook = ttk.Notebook(mainGui)
@@ -41,14 +42,25 @@ def initTabs():
     global key_var,left_click_var,right_click_var,middle_click_var,other_click_var
     global distance_var,level_var,xp_var, quest_progress, achievement_progress, always_on_top_var, hero_level_progress
 
+    # XP and level
+    header_frame = tk.Frame(mainGui, bg="lightgray")
+    header_frame.pack(fill="x", pady=5)
+    level_var = StringVar(value=f"Level: {stats['hero_level']}")
+    tk.Label(header_frame, textvariable=level_var).pack(pady=5)
+    xp_var = StringVar(value=f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
+    xp_label = tk.Label(header_frame, textvariable=xp_var, bg="lightgray")
+    xp_label.pack(pady=5)
+    hero_level_progress = tk.DoubleVar()
+    ttk.Progressbar(header_frame, variable=hero_level_progress, maximum=100).pack(fill="x", padx=10, pady=5)
+
     # Adventure Tab
-    adventure_tab = ttk.Frame(notebook)
-    notebook.add(adventure_tab, text="Adventure")
-    setupLog(adventure_tab)
+    logs_tab = ttk.Frame(notebook)
+    notebook.add(logs_tab, text="📜Logs")
+    setupLog(logs_tab)
 
     # Quest Tab
     quest_tab = ttk.Frame(notebook)
-    notebook.add(quest_tab, text="Quests")
+    notebook.add(quest_tab, text="🎯Quests")
 
     quest_progress = [tk.DoubleVar() for _ in quests]
     for i, quest in enumerate(quests):
@@ -57,16 +69,16 @@ def initTabs():
 
     # Achievements Tab
     achievement_tab = ttk.Frame(notebook)
-    notebook.add(achievement_tab, text="Achievements")
+    notebook.add(achievement_tab, text="🏆Achievements")
 
     achievement_progress = [tk.DoubleVar() for _ in achievements]
     for i, achievement in enumerate(achievements):
         ttk.Label(achievement_tab, text=achievement["name"]).pack(anchor="w", padx=10)
         ttk.Progressbar(achievement_tab, variable=achievement_progress[i], maximum=100).pack(fill="x", padx=10, pady=5)
 
-    # Hero Tab
-    hero_tab = ttk.Frame(notebook)
-    notebook.add(hero_tab, text="Hero")
+    # Stats Tab
+    stats_tab = ttk.Frame(notebook)
+    notebook.add(stats_tab, text="📊Stats")
 
     key_var = StringVar(value=f"Keys Pressed: {stats['key_press_count']}")
     left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
@@ -74,34 +86,28 @@ def initTabs():
     middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
     other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
     distance_var = StringVar(value=f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
-    level_var = StringVar(value=f"Level: {stats['hero_level']}")
-    xp_var = StringVar(value=f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
 
-    tk.Label(hero_tab, textvariable=key_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=left_click_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=right_click_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=middle_click_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=other_click_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=distance_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=level_var, font=("Helvetica", 14)).pack(pady=5)
-    tk.Label(hero_tab, textvariable=xp_var, font=("Helvetica", 14)).pack(pady=5)
-    hero_level_progress = tk.DoubleVar()
-    ttk.Progressbar(hero_tab, variable=hero_level_progress, maximum=100).pack(fill="x", padx=10, pady=5)
+    tk.Label(stats_tab, textvariable=key_var, font=("Fixedsys", 14)).pack(pady=5)
+    tk.Label(stats_tab, textvariable=left_click_var, font=("Fixedsys", 14)).pack(pady=5)
+    tk.Label(stats_tab, textvariable=right_click_var, font=("Fixedsys", 14)).pack(pady=5)
+    tk.Label(stats_tab, textvariable=middle_click_var, font=("Fixedsys", 14)).pack(pady=5)
+    tk.Label(stats_tab, textvariable=other_click_var, font=("Fixedsys", 14)).pack(pady=5)
+    tk.Label(stats_tab, textvariable=distance_var, font=("Fixedsys", 14)).pack(pady=5)
 
     # Inventory Tab
     inventory_tab = ttk.Frame(notebook)
-    notebook.add(inventory_tab, text="Inventory")
+    notebook.add(inventory_tab, text="💰Inventory")
 
     inventory_var = StringVar(value="No items yet.")
-    tk.Label(inventory_tab, textvariable=inventory_var, font=("Helvetica", 14), justify="left").pack(pady=5)
+    tk.Label(inventory_tab, textvariable=inventory_var, justify="left").pack(pady=5)
 
     # Config Tab
     config_tab = ttk.Frame(notebook)
-    notebook.add(config_tab, text="Config")
+    notebook.add(config_tab, text="⚙️Config")
 
-    tk.Button(config_tab, text="Import Save", command=importSave).pack(pady=5)
-    tk.Button(config_tab, text="Export Save", command=exportSave).pack(pady=5)
-    tk.Button(config_tab, text="Reset datas", command=resetSave).pack(pady=5)
+    tk.Button(config_tab, text="⬇️Import", command=importSave).pack(pady=5)
+    tk.Button(config_tab, text="⬆️Export", command=exportSave).pack(pady=5)
+    tk.Button(config_tab, text="🔄Reset datas", command=resetSave).pack(pady=5)
 
     # Boolean variable for Always on Top
     always_on_top_var = tk.BooleanVar(value=False)
@@ -115,6 +121,11 @@ def updateTabs():
     updateQuests()
     updateAchievements()
 
+    # XP and level
+    level_var.set(f"Level: {stats['hero_level']}")
+    xp_var.set(f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
+    hero_level_progress.set(stats['hero_xp'] / stats['xp_threshold'] * 100)
+
     # Hero Tab
     key_var.set(f"Keys Pressed: {stats['key_press_count']}")
     left_click_var.set(f"Left Clicks: {stats['Button.left']}")
@@ -122,9 +133,7 @@ def updateTabs():
     middle_click_var.set(f"Middle Clicks: {stats['Button.middle']}")
     other_click_var.set(f"Other Clicks: {stats['Button.other']}")
     distance_var.set(f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
-    level_var.set(f"Level: {stats['hero_level']}")
-    xp_var.set(f"XP: {stats['hero_xp']}/{stats['xp_threshold']}")
-    hero_level_progress.set(stats['hero_xp'] / stats['xp_threshold'] * 100)
+    
 
      # Quest Tab
     for i, quest in enumerate(quests):

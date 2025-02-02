@@ -20,7 +20,7 @@ def on_mouse_click(x, y, button, pressed):
             stats["Button.middle"] += 1
         else:
             stats["Button.other"] += 1
-            return
+            
         xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
         stats["hero_xp"] += xp_gain
 
