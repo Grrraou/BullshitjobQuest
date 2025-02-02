@@ -17,6 +17,10 @@ left_click_var = None
 right_click_var = None
 middle_click_var = None
 other_click_var = None
+left_click_var = None
+right_click_var = None
+middle_click_var = None
+other_click_var = None
 distance_var = None
 level_var = None
 xp_var = None
@@ -81,6 +85,10 @@ def initTabs():
     notebook.add(stats_tab, text="📊Stats")
 
     key_var = StringVar(value=f"Keys Pressed: {stats['key_press_count']}")
+    left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
+    right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
+    middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
+    other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
     left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
     right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
     middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
