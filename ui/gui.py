@@ -32,11 +32,13 @@ def initGUI():
     mainGui.iconbitmap("icon.ico")
     mainGui.title("Bullshitjob Quest")
     mainGui.option_add("*Font", ("Fixedsys", 14))
+    style = ttk.Style()
+    style.configure("TNotebook.Tab", font=("Fixedsys", 14))
 
     initHeader()
     # Tabs
     notebook = ttk.Notebook(mainGui)
-    notebook.pack(padx=10, pady=10, expand=True)
+    notebook.pack(padx=10, pady=10, expand=True, fill="both")
 
     initTabs()
     updateTabs()
@@ -58,17 +60,16 @@ def initHeader():
     ttk.Progressbar(header_frame, variable=hero_level_progress, maximum=100).pack(fill="x", padx=10, pady=5)
 
 def initTabs():
-    global key_var,left_click_var,right_click_var,middle_click_var,other_click_var
-    global distance_var, quest_progress, achievement_progress, always_on_top_var
+    global quest_progress, achievement_progress, always_on_top_var
 
     # Logs Tab
     logs_tab = ttk.Frame(notebook)
-    notebook.add(logs_tab, text="📜Logs")
+    notebook.add(logs_tab, text="📜Logs", padding=10)
     setupLog(logs_tab)
 
     # Quest Tab
     quest_tab = ttk.Frame(notebook)
-    notebook.add(quest_tab, text="🎯Quests")
+    notebook.add(quest_tab, text="🎯Quests", padding=10)
 
     quest_progress = [tk.DoubleVar() for _ in quests]
     for i, quest in enumerate(quests):
@@ -77,7 +78,7 @@ def initTabs():
 
     # Achievements Tab
     achievement_tab = ttk.Frame(notebook)
-    notebook.add(achievement_tab, text="🏆Achievements")
+    notebook.add(achievement_tab, text="🏆Achievements", padding=10)
 
     achievement_progress = [tk.DoubleVar() for _ in achievements]
     for i, achievement in enumerate(achievements):
@@ -85,37 +86,21 @@ def initTabs():
         ttk.Progressbar(achievement_tab, variable=achievement_progress[i], maximum=100).pack(fill="x", padx=10, pady=5)
 
     # Stats Tab
-    stats_tab = ttk.Frame(notebook)
-    notebook.add(stats_tab, text="📊Stats")
+    #stats_tab = ttk.Frame(notebook)
+    stats_tab = create_scrollable_tab("📊Stats", initStatsTab)
+    notebook.add(stats_tab, text="📊Stats", padding=10)
 
-    key_var = StringVar(value=f"Keys Pressed: {stats['key_press_count']}")
-    left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
-    right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
-    middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
-    other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
-    left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
-    right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
-    middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
-    other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
-    distance_var = StringVar(value=f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
-
-    tk.Label(stats_tab, textvariable=key_var).pack(pady=5)
-    tk.Label(stats_tab, textvariable=left_click_var).pack(pady=5)
-    tk.Label(stats_tab, textvariable=right_click_var).pack(pady=5)
-    tk.Label(stats_tab, textvariable=middle_click_var).pack(pady=5)
-    tk.Label(stats_tab, textvariable=other_click_var).pack(pady=5)
-    tk.Label(stats_tab, textvariable=distance_var).pack(pady=5)
 
     # Inventory Tab
     inventory_tab = ttk.Frame(notebook)
-    notebook.add(inventory_tab, text="💰Inventory")
+    notebook.add(inventory_tab, text="💰Inventory", padding=10)
 
     inventory_var = StringVar(value="No items yet.")
     tk.Label(inventory_tab, textvariable=inventory_var, justify="left").pack(pady=5)
 
     # Config Tab
     config_tab = ttk.Frame(notebook)
-    notebook.add(config_tab, text="⚙️Config")
+    notebook.add(config_tab, text="⚙️Config", padding=10)
 
     tk.Button(config_tab, text="⬇️Import", command=importSave).pack(pady=5)
     tk.Button(config_tab, text="⬆️Export", command=exportSave).pack(pady=5)
@@ -158,5 +143,53 @@ def updateTabs():
     saveStats()
     mainGui.after(100, updateTabs)
 
+def initStatsTab(content_frame):
+    global distance_var, key_var,left_click_var,right_click_var,middle_click_var,other_click_var
+
+    key_var = StringVar(value=f"Keys Pressed: {stats['key_press_count']}")
+    left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
+    right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
+    middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
+    other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
+    left_click_var = StringVar(value=f"Left Clicks: {stats['Button.left']}")
+    right_click_var = StringVar(value=f"Right Clicks: {stats['Button.right']}")
+    middle_click_var = StringVar(value=f"Right Clicks: {stats['Button.middle']}")
+    other_click_var = StringVar(value=f"Right Clicks: {stats['Button.other']}")
+    distance_var = StringVar(value=f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
+
+    tk.Label(content_frame, textvariable=key_var).pack(pady=5)
+    tk.Label(content_frame, textvariable=left_click_var).pack(pady=5)
+    tk.Label(content_frame, textvariable=right_click_var).pack(pady=5)
+    tk.Label(content_frame, textvariable=middle_click_var).pack(pady=5)
+    tk.Label(content_frame, textvariable=other_click_var).pack(pady=5)
+    tk.Label(content_frame, textvariable=distance_var).pack(pady=5)
+
 def toggle_always_on_top():
     mainGui.wm_attributes("-topmost", always_on_top_var.get())
+
+def create_scrollable_tab(tab_name, content_func):
+    tab_frame = ttk.Frame(notebook)
+
+    # Create a canvas and scrollbar
+    canvas = tk.Canvas(tab_frame)
+    scrollbar = ttk.Scrollbar(tab_frame, orient="vertical", command=canvas.yview)
+    content_frame = tk.Frame(canvas)
+
+    # Configure canvas and pack it
+    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.pack(side="left", fill="both", expand=True)
+    scrollbar.pack(side="right", fill="y")
+
+    # Create a window inside the canvas
+    canvas.create_window((0, 0), window=content_frame, anchor="nw")
+
+    content_func(content_frame)
+
+    # Update scroll region whenever content changes
+    content_frame.update_idletasks()
+    canvas.config(scrollregion=canvas.bbox("all"))
+
+    # Bind mouse scroll to canvas for vertical scrolling
+    canvas.bind_all("<MouseWheel>", lambda event: canvas.yview_scroll(-1 * int(event.delta / 120), "units"))
+
+    return tab_frame
