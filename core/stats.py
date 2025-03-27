@@ -18,6 +18,9 @@ defaultStats = {
     "hero_xp": 0,
     "xp_threshold": 100,
     "inventory": [],
+    "safe_for_work": False,  # New setting for SafeForWork mode
+    "key_stats": {},  # Dictionary to store individual key press counts
+    "most_used_key": {"key": "", "count": 0},  # Track the most used key
 }
 stats = defaultStats.copy()
 
@@ -30,6 +33,8 @@ def loadStats(filepath=log_file):
 
 # Save stats to file
 def saveStats(filepath=log_file):
+    # Create data directory if it doesn't exist
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
     with open(filepath, "w") as f:
         json.dump(stats, f, indent=4)
 
@@ -42,3 +47,18 @@ def resetStats():
 def restartApp():
     print("Restarting the application...")
     os.execv(sys.executable, ['python'] + sys.argv)
+
+def updateKeyStats(key):
+    # Convert tuple keys to strings
+    if isinstance(key, tuple):
+        key_str = key[0]
+    else:
+        key_str = str(key)
+    
+    if key_str not in stats["key_stats"]:
+        stats["key_stats"][key_str] = 0
+    stats["key_stats"][key_str] += 1
+    
+    # Update most used key
+    if stats["key_stats"][key_str] > stats["most_used_key"]["count"]:
+        stats["most_used_key"] = {"key": key_str, "count": stats["key_stats"][key_str]}

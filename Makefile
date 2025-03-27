@@ -31,15 +31,17 @@ build:
 	$(VENV_DIR)\Scripts\python -m PyInstaller --onefile --windowed $(SCRIPT_NAME) --name $(OUTPUT_NAME) --icon=$(ICON_PATH)
 
 # Clean the generated files (dist, build, .spec file, venv)
-clean:
+cleanBuild:
 	@echo "Cleaning up generated files..."
 	rmdir /s /q $(DIST_DIR)
 	rmdir /s /q build
 	del /f /q $(OUTPUT_NAME).spec
+
+cleanVenv:
 	rmdir /s /q $(VENV_DIR)
 
 # Rebuild the binary from scratch (clean + build)
-rebuild: clean venv build
+rebuild: cleanBuild build
 
 # Show the usage information
 help:

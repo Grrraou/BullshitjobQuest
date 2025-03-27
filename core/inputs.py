@@ -1,11 +1,46 @@
 from pynput import keyboard, mouse
 import math
-from core.stats import stats
+from core.stats import stats, updateKeyStats
 
 prevMousePosition = None
 
 def on_key_press(key):
+    try:
+        # Convert key to string representation
+        key_str = key.char
+    except AttributeError:
+        # Handle special keys
+        if hasattr(key, 'vk'):
+            # Handle number pad keys
+            if key.vk == 96:  # NumPad0
+                key_str = 'Key.numpad0'
+            elif key.vk == 97:  # NumPad1
+                key_str = 'Key.numpad1'
+            elif key.vk == 98:  # NumPad2
+                key_str = 'Key.numpad2'
+            elif key.vk == 99:  # NumPad3
+                key_str = 'Key.numpad3'
+            elif key.vk == 100:  # NumPad4
+                key_str = 'Key.numpad4'
+            elif key.vk == 101:  # NumPad5
+                key_str = 'Key.numpad5'
+            elif key.vk == 102:  # NumPad6
+                key_str = 'Key.numpad6'
+            elif key.vk == 103:  # NumPad7
+                key_str = 'Key.numpad7'
+            elif key.vk == 104:  # NumPad8
+                key_str = 'Key.numpad8'
+            elif key.vk == 105:  # NumPad9
+                key_str = 'Key.numpad9'
+            elif key.vk == 144:  # NumLock
+                key_str = 'Key.numlock'
+            else:
+                key_str = str(key)
+        else:
+            key_str = str(key)
+    
     stats["key_press_count"] += 1
+    updateKeyStats(key_str)
     xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
     stats["hero_xp"] += xp_gain
 
