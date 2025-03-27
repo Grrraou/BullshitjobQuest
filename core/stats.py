@@ -21,6 +21,8 @@ defaultStats = {
     "safe_for_work": False,  # New setting for SafeForWork mode
     "key_stats": {},  # Dictionary to store individual key press counts
     "most_used_key": {"key": "", "count": 0},  # Track the most used key
+    "key_combo_stats": {},  # Dictionary to store key combination counts
+    "most_used_combo": {"combo": "", "count": 0},  # Track the most used combination
 }
 stats = defaultStats.copy()
 

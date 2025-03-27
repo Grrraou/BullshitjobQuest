@@ -28,6 +28,7 @@ distance_var = None
 level_var = None
 xp_var = None
 most_used_key_var = None  # Add most_used_key_var to globals
+most_used_combo_var = None  # Add most_used_combo_var to globals
 
 # Initialize quest tracking variables
 quest_progress = {}
@@ -39,9 +40,20 @@ def initGUI():
     mainGui = tk.Tk()
     try:
         icon_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "icon.ico")
-        mainGui.iconbitmap(icon_path)
+        if os.path.exists(icon_path):
+            # Set icon for both window and taskbar
+            mainGui.iconbitmap(icon_path)
+            # For Windows, also set the taskbar icon
+            if os.name == 'nt':  # Windows
+                import ctypes
+                myappid = 'BullshitjobQuest.1.0'  # arbitrary string
+                ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myappid)
+        else:
+            print(f"Warning: Icon file not found at {icon_path}")
     except Exception as e:
-        print(f"Could not load icon: {e}")
+        print(f"Warning: Could not load icon: {e}")
+        print(f"Current directory: {os.getcwd()}")
+        print(f"Script directory: {os.path.dirname(os.path.dirname(__file__))}")
     mainGui.title("Bullshitjob Quest")
     mainGui.option_add("*Font", ("Fixedsys", 14))
     style = ttk.Style()
@@ -281,7 +293,7 @@ def create_scrollable_tab(tab_name, content_func):
     return main_frame
 
 def initStatsTab(content_frame):
-    global distance_var, key_var, left_click_var, right_click_var, middle_click_var, other_click_var, most_used_key_var, key_stats_vars, key_stats_frame
+    global distance_var, key_var, left_click_var, right_click_var, middle_click_var, other_click_var, most_used_key_var, most_used_combo_var, key_stats_vars, key_combo_stats_vars, key_stats_frame, key_combo_stats_frame
 
     # Create a container frame for centering
     container = ttk.Frame(content_frame)
@@ -295,6 +307,7 @@ def initStatsTab(content_frame):
     other_click_var = StringVar(value=f"Other Clicks: {stats['Button.other']}")
     distance_var = StringVar(value=f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
     most_used_key_var = StringVar(value=f"Key: {stats['most_used_key']['key']} ({stats['most_used_key']['count']} times)")
+    most_used_combo_var = StringVar(value=f"Combo: {stats['most_used_combo']['combo']} ({stats['most_used_combo']['count']} times)")
 
     # Basic stats section
     ttk.Label(container, text="Basic Statistics", font=("Fixedsys", 14, "bold")).pack(pady=5)
@@ -324,10 +337,26 @@ def initStatsTab(content_frame):
     
     # Add key stats labels
     key_stats_vars = {}
-    for key, count in sorted(stats["key_stats"].items(), key=get_key_sort_order):
-        key_str = format_key_display(key)
-        key_stats_vars[key_str] = StringVar(value=f"{key_str}: {count} times")
-        ttk.Label(key_stats_frame, textvariable=key_stats_vars[key_str]).pack(anchor="w", pady=1)
+    for key, count in sorted(stats["key_stats"].items()):
+        key_stats_vars[key] = StringVar(value=f"{key}: {count} times")
+        ttk.Label(key_stats_frame, textvariable=key_stats_vars[key]).pack(anchor="w", pady=1)
+
+    # Separator
+    ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
+
+    # Key combinations section
+    ttk.Label(container, text="Key Combinations", font=("Fixedsys", 14, "bold")).pack(pady=5)
+    ttk.Label(container, textvariable=most_used_combo_var).pack(pady=2)
+    
+    # Create a frame for combo stats
+    key_combo_stats_frame = ttk.Frame(container)
+    key_combo_stats_frame.pack(fill="both", expand=True)
+    
+    # Add combo stats labels
+    key_combo_stats_vars = {}
+    for combo, count in sorted(stats["key_combo_stats"].items()):
+        key_combo_stats_vars[combo] = StringVar(value=f"{combo}: {count} times")
+        ttk.Label(key_combo_stats_frame, textvariable=key_combo_stats_vars[combo]).pack(anchor="w", pady=1)
 
 def updateTabs():
     levelUp()
@@ -350,6 +379,9 @@ def updateTabs():
     # Most used key
     most_used_key_var.set(f"Key: {stats['most_used_key']['key']} ({stats['most_used_key']['count']} times)")
 
+    # Most used combination
+    most_used_combo_var.set(f"Combo: {stats['most_used_combo']['combo']} ({stats['most_used_combo']['count']} times)")
+
     # Update key stats
     if 'key_stats_vars' in globals() and 'key_stats_frame' in globals():
         # Clear existing labels
@@ -357,13 +389,26 @@ def updateTabs():
             widget.destroy()
         
         # Recreate labels in sorted order
-        for key, count in sorted(stats["key_stats"].items(), key=get_key_sort_order):
-            key_str = format_key_display(key)
-            if key_str in key_stats_vars:
-                key_stats_vars[key_str].set(f"{key_str}: {count} times")
+        for key, count in sorted(stats["key_stats"].items()):
+            if key in key_stats_vars:
+                key_stats_vars[key].set(f"{key}: {count} times")
             else:
-                key_stats_vars[key_str] = StringVar(value=f"{key_str}: {count} times")
-            ttk.Label(key_stats_frame, textvariable=key_stats_vars[key_str]).pack(anchor="w", pady=1)
+                key_stats_vars[key] = StringVar(value=f"{key}: {count} times")
+            ttk.Label(key_stats_frame, textvariable=key_stats_vars[key]).pack(anchor="w", pady=1)
+
+    # Update combo stats
+    if 'key_combo_stats_vars' in globals() and 'key_combo_stats_frame' in globals():
+        # Clear existing labels
+        for widget in key_combo_stats_frame.winfo_children():
+            widget.destroy()
+        
+        # Recreate labels in sorted order
+        for combo, count in sorted(stats["key_combo_stats"].items()):
+            if combo in key_combo_stats_vars:
+                key_combo_stats_vars[combo].set(f"{combo}: {count} times")
+            else:
+                key_combo_stats_vars[combo] = StringVar(value=f"{combo}: {count} times")
+            ttk.Label(key_combo_stats_frame, textvariable=key_combo_stats_vars[combo]).pack(anchor="w", pady=1)
 
     # Quest Tab
     for quest in quests:

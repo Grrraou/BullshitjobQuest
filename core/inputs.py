@@ -5,6 +5,13 @@ from core.stats import stats, updateKeyStats
 prevMousePosition = None
 pressed_keys = set()  # Track currently pressed keys to prevent multiple counts
 
+def format_key_name(key_str):
+    # Format special keys
+    if key_str.startswith('Key.'):
+        # Remove 'Key.' prefix and capitalize
+        return key_str[4:].capitalize()
+    return key_str.upper()
+
 def on_key_press(key):
     try:
         # Convert key to string representation
@@ -40,13 +47,27 @@ def on_key_press(key):
         else:
             key_str = str(key)
     
-    # Only count the key press if it's not already pressed
-    if key_str not in pressed_keys:
-        pressed_keys.add(key_str)
-        stats["key_press_count"] += 1
-        updateKeyStats(key_str)
-        xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
-        stats["hero_xp"] += xp_gain
+    # Add key to current combination
+    pressed_keys.add(key_str)
+    
+    # Check for key combinations
+    if len(pressed_keys) > 1:
+        # Sort keys for consistent ordering and format them
+        formatted_keys = [format_key_name(k) for k in sorted(pressed_keys)]
+        combo = ' + '.join(formatted_keys)
+        
+        if combo not in stats["key_combo_stats"]:
+            stats["key_combo_stats"][combo] = 0
+        stats["key_combo_stats"][combo] += 1
+        
+        # Update most used combination
+        if stats["key_combo_stats"][combo] > stats["most_used_combo"]["count"]:
+            stats["most_used_combo"] = {"combo": combo, "count": stats["key_combo_stats"][combo]}
+    
+    stats["key_press_count"] += 1
+    updateKeyStats(key_str)
+    xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
+    stats["hero_xp"] += xp_gain
 
 def on_key_release(key):
     try:
