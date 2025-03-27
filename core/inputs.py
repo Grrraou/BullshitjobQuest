@@ -3,6 +3,7 @@ import math
 from core.stats import stats, updateKeyStats
 
 prevMousePosition = None
+pressed_keys = set()  # Track currently pressed keys to prevent multiple counts
 
 def on_key_press(key):
     try:
@@ -39,10 +40,52 @@ def on_key_press(key):
         else:
             key_str = str(key)
     
-    stats["key_press_count"] += 1
-    updateKeyStats(key_str)
-    xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
-    stats["hero_xp"] += xp_gain
+    # Only count the key press if it's not already pressed
+    if key_str not in pressed_keys:
+        pressed_keys.add(key_str)
+        stats["key_press_count"] += 1
+        updateKeyStats(key_str)
+        xp_gain = max(1, round(int(stats["mouse_distance"]) / 100000))
+        stats["hero_xp"] += xp_gain
+
+def on_key_release(key):
+    try:
+        # Convert key to string representation
+        key_str = key.char
+    except AttributeError:
+        # Handle special keys
+        if hasattr(key, 'vk'):
+            # Handle number pad keys
+            if key.vk == 96:  # NumPad0
+                key_str = 'Key.numpad0'
+            elif key.vk == 97:  # NumPad1
+                key_str = 'Key.numpad1'
+            elif key.vk == 98:  # NumPad2
+                key_str = 'Key.numpad2'
+            elif key.vk == 99:  # NumPad3
+                key_str = 'Key.numpad3'
+            elif key.vk == 100:  # NumPad4
+                key_str = 'Key.numpad4'
+            elif key.vk == 101:  # NumPad5
+                key_str = 'Key.numpad5'
+            elif key.vk == 102:  # NumPad6
+                key_str = 'Key.numpad6'
+            elif key.vk == 103:  # NumPad7
+                key_str = 'Key.numpad7'
+            elif key.vk == 104:  # NumPad8
+                key_str = 'Key.numpad8'
+            elif key.vk == 105:  # NumPad9
+                key_str = 'Key.numpad9'
+            elif key.vk == 144:  # NumLock
+                key_str = 'Key.numlock'
+            else:
+                key_str = str(key)
+        else:
+            key_str = str(key)
+    
+    # Remove key from pressed keys when released
+    if key_str in pressed_keys:
+        pressed_keys.remove(key_str)
 
 def on_mouse_click(x, y, button, pressed):
     if pressed:
@@ -68,7 +111,7 @@ def on_mouse_move(x, y):
     prevMousePosition = (x, y)
 
 def startListeners():
-    key_listener = keyboard.Listener(on_press=on_key_press)
+    key_listener = keyboard.Listener(on_press=on_key_press, on_release=on_key_release)
     mouse_listener = mouse.Listener(on_click=on_mouse_click, on_move=on_mouse_move)
 
     key_listener.start()
