@@ -69,9 +69,11 @@ def updateKeyStats(key):
         stats["most_used_key"] = {"key": key_str, "count": stats["key_stats"][key_str]}
 
 def initStats():
-    """Initialize all stats to their default values"""
+    """Initialize any missing stats to their default values"""
     global stats
-    stats = {
+    
+    # Define default values
+    default_values = {
         "key_press_count": 0,
         "Button.left": 0,
         "Button.right": 0,
@@ -91,4 +93,10 @@ def initStats():
         "track_detailed_keys": True,
         "key_combo_count": 0
     }
+    
+    # Only initialize missing stats
+    for key, value in default_values.items():
+        if key not in stats:
+            stats[key] = value
+    
     saveStats()

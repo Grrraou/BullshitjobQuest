@@ -7,8 +7,8 @@ from core.inputs import startListeners
 
 def main():
     # Initialize everything in the correct order
-    initStats()
-    loadStats()
+    loadStats()  # Load existing stats first
+    initStats()  # Then initialize any missing stats
     initQuests()
     
     # GUI Setup
