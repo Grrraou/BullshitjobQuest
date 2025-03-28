@@ -78,35 +78,37 @@ def on_key_press(key):
         # Update key press count
         stats["key_press_count"] += 1
         
-        # Update individual key stats
-        if key_name not in stats["key_stats"]:
-            stats["key_stats"][key_name] = 0
-        stats["key_stats"][key_name] += 1
-        
-        # Update most pressed key
-        if stats["key_stats"][key_name] > stats["most_used_key"]["count"]:
-            stats["most_used_key"] = {"key": key_name, "count": stats["key_stats"][key_name]}
-        
-        # Add to current keys for combination tracking
-        pressed_keys.add(key_name)
-        
-        # Check for combinations
-        if len(pressed_keys) > 1:
-            # Sort keys for consistent ordering
-            sorted_keys = sorted(pressed_keys)
-            combo = " + ".join(sorted_keys)
+        # Only update detailed stats if tracking is enabled
+        if stats["track_detailed_keys"]:
+            # Update individual key stats
+            if key_name not in stats["key_stats"]:
+                stats["key_stats"][key_name] = 0
+            stats["key_stats"][key_name] += 1
             
-            # Initialize combo stats if not exists
-            if combo not in stats["key_combo_stats"]:
-                stats["key_combo_stats"][combo] = 0
+            # Update most pressed key
+            if stats["key_stats"][key_name] > stats["most_used_key"]["count"]:
+                stats["most_used_key"] = {"key": key_name, "count": stats["key_stats"][key_name]}
             
-            # Update combo stats
-            stats["key_combo_stats"][combo] += 1
-            stats["key_combo_count"] += 1
+            # Add to current keys for combination tracking
+            pressed_keys.add(key_name)
             
-            # Update most used combo
-            if stats["key_combo_stats"][combo] > stats["most_used_combo"]["count"]:
-                stats["most_used_combo"] = {"combo": combo, "count": stats["key_combo_stats"][combo]}
+            # Check for combinations
+            if len(pressed_keys) > 1:
+                # Sort keys for consistent ordering
+                sorted_keys = sorted(pressed_keys)
+                combo = " + ".join(sorted_keys)
+                
+                # Initialize combo stats if not exists
+                if combo not in stats["key_combo_stats"]:
+                    stats["key_combo_stats"][combo] = 0
+                
+                # Update combo stats
+                stats["key_combo_stats"][combo] += 1
+                stats["key_combo_count"] += 1
+                
+                # Update most used combo
+                if stats["key_combo_stats"][combo] > stats["most_used_combo"]["count"]:
+                    stats["most_used_combo"] = {"combo": combo, "count": stats["key_combo_stats"][combo]}
             
     except Exception as e:
         print(f"Error in on_key_press: {e}")

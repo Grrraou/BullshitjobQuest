@@ -315,45 +315,47 @@ def initStatsTab(content_frame):
     ttk.Label(container, textvariable=other_click_var).pack(pady=2)
     ttk.Label(container, textvariable=distance_var).pack(pady=2)
 
-    # Separator
-    ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
+    # Only show detailed stats if tracking is enabled
+    if stats["track_detailed_keys"]:
+        # Separator
+        ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
 
-    # Most used key section
-    ttk.Label(container, text="Most Used Key", font=("Fixedsys", 14, "bold")).pack(pady=5)
-    ttk.Label(container, textvariable=most_used_key_var).pack(pady=2)
+        # Most used key section
+        ttk.Label(container, text="Most Used Key", font=("Fixedsys", 14, "bold")).pack(pady=5)
+        ttk.Label(container, textvariable=most_used_key_var).pack(pady=2)
 
-    # Separator
-    ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
+        # Separator
+        ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
 
-    # Detailed key statistics section
-    ttk.Label(container, text="Detailed Key Statistics", font=("Fixedsys", 14, "bold")).pack(pady=5)
-    
-    # Create a frame for key stats
-    key_stats_frame = ttk.Frame(container)
-    key_stats_frame.pack(fill="both", expand=True)
-    
-    # Add key stats labels
-    key_stats_vars = {}
-    for key, count in sorted(stats["key_stats"].items()):
-        key_stats_vars[key] = StringVar(value=f"{key}: {count} times")
-        ttk.Label(key_stats_frame, textvariable=key_stats_vars[key]).pack(anchor="w", pady=1)
+        # Detailed key statistics section
+        ttk.Label(container, text="Detailed Key Statistics", font=("Fixedsys", 14, "bold")).pack(pady=5)
+        
+        # Create a frame for key stats
+        key_stats_frame = ttk.Frame(container)
+        key_stats_frame.pack(fill="both", expand=True)
+        
+        # Add key stats labels
+        key_stats_vars = {}
+        for key, count in sorted(stats["key_stats"].items()):
+            key_stats_vars[key] = StringVar(value=f"{key}: {count} times")
+            ttk.Label(key_stats_frame, textvariable=key_stats_vars[key]).pack(anchor="w", pady=1)
 
-    # Separator
-    ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
+        # Separator
+        ttk.Separator(container, orient="horizontal").pack(fill="x", pady=10)
 
-    # Key combinations section
-    ttk.Label(container, text="Key Combinations", font=("Fixedsys", 14, "bold")).pack(pady=5)
-    ttk.Label(container, textvariable=most_used_combo_var).pack(pady=2)
-    
-    # Create a frame for combo stats
-    key_combo_stats_frame = ttk.Frame(container)
-    key_combo_stats_frame.pack(fill="both", expand=True)
-    
-    # Add combo stats labels
-    key_combo_stats_vars = {}
-    for combo, count in sorted(stats["key_combo_stats"].items()):
-        key_combo_stats_vars[combo] = StringVar(value=f"{combo}: {count} times")
-        ttk.Label(key_combo_stats_frame, textvariable=key_combo_stats_vars[combo]).pack(anchor="w", pady=1)
+        # Key combinations section
+        ttk.Label(container, text="Key Combinations", font=("Fixedsys", 14, "bold")).pack(pady=5)
+        ttk.Label(container, textvariable=most_used_combo_var).pack(pady=2)
+        
+        # Create a frame for combo stats
+        key_combo_stats_frame = ttk.Frame(container)
+        key_combo_stats_frame.pack(fill="both", expand=True)
+        
+        # Add combo stats labels
+        key_combo_stats_vars = {}
+        for combo, count in sorted(stats["key_combo_stats"].items()):
+            key_combo_stats_vars[combo] = StringVar(value=f"{combo}: {count} times")
+            ttk.Label(key_combo_stats_frame, textvariable=key_combo_stats_vars[combo]).pack(anchor="w", pady=1)
 
 def updateTabs():
     levelUp()
@@ -372,39 +374,27 @@ def updateTabs():
     other_click_var.set(f"Other Clicks: {stats['Button.other']}")
     distance_var.set(f"Mouse Distance: {stats['mouse_distance']:.2f} pixels")
 
-    # Most used key
-    most_used_key_var.set(f"Key: {stats['most_used_key']['key']} ({stats['most_used_key']['count']} times)")
+    # Only update detailed stats if tracking is enabled
+    if stats["track_detailed_keys"]:
+        # Most used key
+        most_used_key_var.set(f"Key: {stats['most_used_key']['key']} ({stats['most_used_key']['count']} times)")
 
-    # Most used combination
-    most_used_combo_var.set(f"Combo: {stats['most_used_combo']['combo']} ({stats['most_used_combo']['count']} times)")
+        # Most used combination
+        most_used_combo_var.set(f"Combo: {stats['most_used_combo']['combo']} ({stats['most_used_combo']['count']} times)")
 
-    # Update key stats
-    if 'key_stats_vars' in globals() and 'key_stats_frame' in globals():
-        # Clear existing labels
-        for widget in key_stats_frame.winfo_children():
-            widget.destroy()
-        
-        # Recreate labels in sorted order
-        for key, count in sorted(stats["key_stats"].items()):
-            if key in key_stats_vars:
-                key_stats_vars[key].set(f"{key}: {count} times")
-            else:
-                key_stats_vars[key] = StringVar(value=f"{key}: {count} times")
-            ttk.Label(key_stats_frame, textvariable=key_stats_vars[key]).pack(anchor="w", pady=1)
-
-    # Update combo stats
-    if 'key_combo_stats_vars' in globals() and 'key_combo_stats_frame' in globals():
-        # Clear existing labels
-        for widget in key_combo_stats_frame.winfo_children():
-            widget.destroy()
-        
-        # Recreate labels in sorted order
-        for combo, count in sorted(stats["key_combo_stats"].items()):
-            if combo in key_combo_stats_vars:
-                key_combo_stats_vars[combo].set(f"{combo}: {count} times")
-            else:
-                key_combo_stats_vars[combo] = StringVar(value=f"{combo}: {count} times")
-            ttk.Label(key_combo_stats_frame, textvariable=key_combo_stats_vars[combo]).pack(anchor="w", pady=1)
+        # Update key stats
+        if 'key_stats_vars' in globals() and 'key_stats_frame' in globals():
+            # Clear existing labels
+            for widget in key_stats_frame.winfo_children():
+                widget.destroy()
+            
+            # Recreate labels in sorted order
+            for key, count in sorted(stats["key_stats"].items()):
+                if key in key_stats_vars:
+                    key_stats_vars[key].set(f"{key}: {count} times")
+                else:
+                    key_stats_vars[key] = StringVar(value=f"{key}: {count} times")
+                ttk.Label(key_stats_frame, textvariable=key_stats_vars[key]).pack(anchor="w", pady=1)
 
     # Quest Tab
     for quest in quests:
@@ -454,3 +444,8 @@ def toggleSafeForWork():
 def toggle_detailed_keys():
     stats["track_detailed_keys"] = track_detailed_keys_var.get()
     saveStats()
+    # Refresh the stats tab to show/hide detailed stats
+    if 'stats_tab' in globals():
+        for widget in stats_tab.winfo_children():
+            widget.destroy()
+        initStatsTab(stats_tab)
