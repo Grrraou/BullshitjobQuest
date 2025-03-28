@@ -23,6 +23,9 @@ defaultStats = {
     "most_used_key": {"key": "", "count": 0},  # Track the most used key
     "key_combo_stats": {},  # Dictionary to store key combination counts
     "most_used_combo": {"combo": "", "count": 0},  # Track the most used combination
+    "quests_completed": 0,
+    "track_detailed_keys": True,  # New option for detailed key tracking
+    "key_combo_count": 0  # Track total number of key combinations
 }
 stats = defaultStats.copy()
 
@@ -64,3 +67,28 @@ def updateKeyStats(key):
     # Update most used key
     if stats["key_stats"][key_str] > stats["most_used_key"]["count"]:
         stats["most_used_key"] = {"key": key_str, "count": stats["key_stats"][key_str]}
+
+def initStats():
+    """Initialize all stats to their default values"""
+    global stats
+    stats = {
+        "key_press_count": 0,
+        "Button.left": 0,
+        "Button.right": 0,
+        "Button.middle": 0,
+        "Button.other": 0,
+        "mouse_distance": 0.0,
+        "hero_level": 1,
+        "hero_xp": 0,
+        "xp_threshold": 100,
+        "inventory": [],
+        "safe_for_work": False,
+        "key_stats": {},
+        "most_used_key": {"key": "", "count": 0},
+        "key_combo_stats": {},
+        "most_used_combo": {"combo": "", "count": 0},
+        "quests_completed": 0,
+        "track_detailed_keys": True,
+        "key_combo_count": 0
+    }
+    saveStats()

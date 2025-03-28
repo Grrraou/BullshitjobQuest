@@ -1,19 +1,25 @@
 import threading
 
-from core.stats import loadStats
+from core.stats import initStats, loadStats
+from core.quests import initQuests
+from ui.gui import initGUI, updateTabs
 from core.inputs import startListeners
 
-from ui.gui import initGUI,updateTabs
+def main():
+    # Initialize everything in the correct order
+    initStats()
+    loadStats()
+    initQuests()
+    
+    # GUI Setup
+    mainGui = initGUI()
+    
+    # Start listeners and GUI loop
+    listener_thread = threading.Thread(target=startListeners, daemon=True)
+    listener_thread.start()
+    
+    mainGui.after(100, updateTabs)
+    mainGui.mainloop()
 
-# Load stats on startup
-loadStats()
-
-# GUI Setup
-mainGui = initGUI()
-
-# Start listeners and GUI loop
-listener_thread = threading.Thread(target=startListeners, daemon=True)
-listener_thread.start()
-
-mainGui.after(100, updateTabs)
-mainGui.mainloop()
+if __name__ == "__main__":
+    main()

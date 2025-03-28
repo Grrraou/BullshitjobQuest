@@ -4,8 +4,7 @@ import os
 
 from core.stats import stats, saveStats
 from core.hero import levelUp
-from core.quests import updateQuests, quests, getCurrentQuests, getCompletedQuests
-from core.achievements import updateAchievements,achievements
+from core.quests import updateQuests, quests, getCurrentQuests, getCompletedQuests, CATEGORIES
 
 from ui.logs import setupLog
 from ui.config import importSave,exportSave,resetSave
@@ -100,18 +99,23 @@ def initHeader(header_frame):
     ttk.Progressbar(header_frame, variable=hero_level_progress, maximum=100).pack(fill="x", padx=10, pady=5)
 
 def initTabs():
-    global quest_progress, achievement_progress, always_on_top_var, updateQuestDisplay, stats_tab, config_tab, visible_tabs, safe_for_work_var
+    global quest_progress, always_on_top_var, updateQuestDisplay, stats_tab, config_tab, visible_tabs, safe_for_work_var, track_detailed_keys_var
 
     # Store references to all tabs
     visible_tabs = {}
 
-    # Logs Tab
+    # Stats Tab (first)
+    stats_tab = create_scrollable_tab("📊Stats", initStatsTab)
+    visible_tabs["stats"] = stats_tab
+    notebook.add(stats_tab, text="📊Stats", padding=10)
+
+    # Logs Tab (second)
     logs_tab = ttk.Frame(notebook)
     visible_tabs["logs"] = logs_tab
     notebook.add(logs_tab, text="📜Logs", padding=10)
     setupLog(logs_tab)
 
-    # Quest Tab
+    # Quest Tab (third)
     quest_tab = ttk.Frame(notebook)
     visible_tabs["quest"] = quest_tab
     notebook.add(quest_tab, text="🎯Quests", padding=10)
@@ -140,25 +144,36 @@ def initTabs():
             widget.destroy()
 
         # Update current quests
-        for quest in getCurrentQuests():
+        current_quests = getCurrentQuests()
+        for quest in current_quests:
             quest_id = quest["name"]
             if quest_id not in quest_progress:
                 quest_progress[quest_id] = tk.DoubleVar()
                 quest_labels[quest_id] = StringVar()
+            
+            # Add category label if it's the first quest in its category
+            if quest == current_quests[0] or quest["category"] != current_quests[current_quests.index(quest)-1]["category"]:
+                ttk.Label(current_content, text=CATEGORIES[quest["category"]], font=("Fixedsys", 12, "bold")).pack(anchor="w", padx=10, pady=(10,0))
             
             ttk.Label(current_content, textvariable=quest_labels[quest_id]).pack(anchor="w", padx=10)
             ttk.Progressbar(current_content, variable=quest_progress[quest_id], maximum=100).pack(fill="x", padx=10, pady=5)
             ttk.Label(current_content, text=f"Reward: {quest['xp_reward']} XP").pack(anchor="w", padx=10)
 
         # Update completed quests
-        for quest in getCompletedQuests():
-            quest_id = quest["name"]
-            if quest_id not in quest_labels:
-                quest_labels[quest_id] = StringVar()
+        completed_by_category = getCompletedQuests()
+        for category, quests in completed_by_category.items():
+            # Add category header
+            ttk.Label(completed_content, text=CATEGORIES[category], font=("Fixedsys", 12, "bold")).pack(anchor="w", padx=10, pady=(10,0))
             
-            ttk.Label(completed_content, textvariable=quest_labels[quest_id]).pack(anchor="w", padx=10)
-            ttk.Label(completed_content, text="✓ Completed").pack(anchor="w", padx=10)
-            ttk.Label(completed_content, text=f"Reward: {quest['xp_reward']} XP").pack(anchor="w", padx=10, pady=5)
+            # Add completed quests for this category
+            for quest in quests:
+                quest_id = quest["name"]
+                if quest_id not in quest_labels:
+                    quest_labels[quest_id] = StringVar()
+                
+                ttk.Label(completed_content, textvariable=quest_labels[quest_id]).pack(anchor="w", padx=10)
+                ttk.Label(completed_content, text="✓ Completed").pack(anchor="w", padx=10)
+                ttk.Label(completed_content, text=f"Reward: {quest['xp_reward']} XP").pack(anchor="w", padx=10, pady=5)
 
         # Update scroll regions
         current_quests_frame.winfo_children()[0].config(scrollregion=current_quests_frame.winfo_children()[0].bbox("all"))
@@ -167,30 +182,7 @@ def initTabs():
     # Initial quest display setup
     updateQuestDisplay()
 
-    # Achievements Tab
-    achievement_tab = ttk.Frame(notebook)
-    visible_tabs["achievement"] = achievement_tab
-    notebook.add(achievement_tab, text="🏆Achievements", padding=10)
-
-    achievement_progress = [tk.DoubleVar() for _ in achievements]
-    for i, achievement in enumerate(achievements):
-        ttk.Label(achievement_tab, text=achievement["name"]).pack(anchor="w", padx=10)
-        ttk.Progressbar(achievement_tab, variable=achievement_progress[i], maximum=100).pack(fill="x", padx=10, pady=5)
-
-    # Stats Tab
-    stats_tab = create_scrollable_tab("📊Stats", initStatsTab)
-    visible_tabs["stats"] = stats_tab
-    notebook.add(stats_tab, text="📊Stats", padding=10)
-
-    # Inventory Tab
-    inventory_tab = ttk.Frame(notebook)
-    visible_tabs["inventory"] = inventory_tab
-    notebook.add(inventory_tab, text="💰Inventory", padding=10)
-
-    inventory_var = StringVar(value="No items yet.")
-    tk.Label(inventory_tab, textvariable=inventory_var, justify="left").pack(pady=5)
-
-    # Config Tab
+    # Config Tab (last)
     config_tab = ttk.Frame(notebook)
     visible_tabs["config"] = config_tab
     notebook.add(config_tab, text="⚙️Config", padding=10)
@@ -202,10 +194,15 @@ def initTabs():
     # Boolean variables for checkboxes
     always_on_top_var = tk.BooleanVar(value=False)
     safe_for_work_var = tk.BooleanVar(value=stats["safe_for_work"])  # Initialize from stats
+    track_detailed_keys_var = tk.BooleanVar(value=stats["track_detailed_keys"])  # Initialize from stats
 
     # Add Checkbuttons
     tk.Checkbutton(config_tab, text="Always on Top", variable=always_on_top_var, command=toggle_always_on_top).pack(pady=5)
     tk.Checkbutton(config_tab, text="Safe For Work Mode", variable=safe_for_work_var, command=toggleSafeForWork).pack(pady=5)
+    tk.Checkbutton(config_tab, text="Track Detailed Keys", variable=track_detailed_keys_var, command=toggle_detailed_keys).pack(pady=5)
+
+    # Select the Stats tab by default
+    notebook.select(stats_tab)
 
 def get_key_sort_order(key):
     # Convert key to string if it's a tuple
@@ -361,7 +358,6 @@ def initStatsTab(content_frame):
 def updateTabs():
     levelUp()
     updateQuests()
-    updateAchievements()
 
     # XP and level
     level_var.set(f"Level: {stats['hero_level']}")
@@ -414,18 +410,14 @@ def updateTabs():
     for quest in quests:
         quest_id = quest["name"]
         if quest_id in quest_progress and not quest["completed"]:
-            progress = quest["condition"]() / quest["target"] * 100
+            progress = quest["progress"] / quest["target"] * 100
             quest_progress[quest_id].set(min(progress, 100))
-            quest_labels[quest_id].set(f"{quest['name']} ({quest['condition']():.0f}/{quest['target']})")
+            quest_labels[quest_id].set(f"{quest['name']} ({quest['progress']:.0f}/{quest['target']})")
         elif quest_id in quest_labels and quest["completed"]:
             quest_labels[quest_id].set(f"{quest['name']} ({quest['target']}/{quest['target']})")
 
     # Update quest display to move completed quests
     updateQuestDisplay()
-
-    # Logs Tab
-    for i, achievement in enumerate(achievements):
-        achievement_progress[i].set(achievement["condition"]() / achievement["target"] * 100)
 
     saveStats()
     mainGui.after(100, updateTabs)
@@ -455,8 +447,10 @@ def toggleSafeForWork():
                 # Get the original tab text
                 tab_text = {
                     "logs": "📜Logs",
-                    "quest": "🎯Quests",
-                    "achievement": "🏆Achievements",
-                    "inventory": "💰Inventory"
+                    "quest": "🎯Quests"
                 }.get(tab_name, "")
                 notebook.add(tab, text=tab_text)
+
+def toggle_detailed_keys():
+    stats["track_detailed_keys"] = track_detailed_keys_var.get()
+    saveStats()
