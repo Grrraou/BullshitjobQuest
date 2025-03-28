@@ -2,6 +2,10 @@
 
 A gamified productivity tracker that turns your daily work activities into an RPG-like experience. Level up your character while performing your regular work tasks!
 
+![image](https://github.com/user-attachments/assets/ba7a2ea3-2268-4d44-aaf7-3feef14c33b7)
+![image](https://github.com/user-attachments/assets/173c7bf4-ad49-43a2-986a-56c352337405)
+
+
 ## Features 🌟
 
 - **Real-time Activity Tracking**
